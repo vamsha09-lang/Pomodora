@@ -40,11 +40,27 @@ function ensure(name, value) {
 }
 
 Object.entries(defaults).forEach(([k, v]) => ensure(k, v));
-
 function read(name) {
-  return JSON.parse(
-    fs.readFileSync(`data/${name}.json`, "utf8")
-  );
+  try {
+    const content = fs.readFileSync(
+      `data/${name}.json`,
+      "utf8"
+    );
+
+    if (!content.trim()) {
+      return name === "settings"
+        ? defaults.settings
+        : [];
+    }
+
+    return JSON.parse(content);
+  } catch (err) {
+    console.error(`Error reading ${name}`, err);
+
+    return name === "settings"
+      ? defaults.settings
+      : [];
+  }
 }
 
 function write(name, data) {
