@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>PomoBalance</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,300&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="styles.css"/>
+</head>
+<body data-theme="aurora">
+
+<div class="top-progress"><div class="top-progress-fill" id="top-prog"></div></div>
+
+<!-- NAV -->
+<nav class="nav">
+  <div class="nav-logo">
+    <div class="logo-icon">🍅</div>
+    PomoBalance
+  </div>
+  <div class="nav-right">
+    <button class="nav-btn" onclick="toggleFocusMode()" id="focus-mode-btn" title="Focus Mode">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg>
+      Focus Mode
+    </button>
+    <button class="nav-btn" onclick="openSettings()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      Settings
+    </button>
+    <button class="nav-btn" onclick="openReport()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+      Report
+    </button>
+  </div>
+</nav>
+
+<!-- LAYOUT -->
+<div class="app-layout">
+
+  <!-- SIDEBAR: PROJECTS -->
+  <aside class="sidebar">
+    <div class="sidebar-section">
+      <div class="sidebar-label">Projects</div>
+      <div id="project-list"></div>
+      <button class="add-btn" onclick="openProjectModal()">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        New project
+      </button>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">Today's Goal</div>
+      <div id="today-goal-panel" style="padding:4px 8px"></div>
+    </div>
+  </aside>
+
+  <!-- TIMER CENTER -->
+  <main class="timer-center">
+    <div class="mode-pills">
+      <button class="mode-pill active" onclick="setMode('focus')" id="pill-focus">Pomodoro</button>
+      <button class="mode-pill" onclick="setMode('short')" id="pill-short">Short Break</button>
+      <button class="mode-pill" onclick="setMode('long')" id="pill-long">Long Break</button>
+    </div>
+
+    <div class="timer-ring-wrap mode-focus" id="timer-ring-wrap">
+      <svg class="timer-svg" id="timer-svg" width="260" height="260" viewBox="0 0 260 260">
+        <circle class="ring-track" cx="130" cy="130" r="118" fill="none" stroke-width="8"/>
+        <circle class="ring-progress" id="ring-prog" cx="130" cy="130" r="118" fill="none" stroke-width="8"
+          stroke-dasharray="741.4" stroke-dashoffset="0"/>
+      </svg>
+      <div class="timer-center-text">
+        <div class="timer-digits" id="timer-digits">25:00</div>
+        <div class="timer-session-lbl" id="timer-session-lbl">FOCUS</div>
+      </div>
+    </div>
+
+    <div class="timer-project-badge" id="active-project-badge" onclick="showProjectPicker()">
+      <div class="badge-dot" id="badge-dot" style="background:#a78bfa"></div>
+      <span id="badge-name">Select a project</span>
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+
+    <div class="timer-controls">
+      <button class="ctrl-icon-btn" onclick="resetTimer()" title="Reset">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.49"/></svg>
+      </button>
+      <button class="ctrl-main" id="ctrl-main" onclick="toggleTimer()">
+        <svg id="ctrl-icon" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+      </button>
+      <button class="ctrl-icon-btn" onclick="skipSession()" title="Skip">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 4 15 12 5 20 5 4"/><line x1="19" y1="5" x2="19" y2="19"/></svg>
+      </button>
+    </div>
+
+    <div class="session-tracker" id="session-tracker"></div>
+
+    <!-- TASKS -->
+    <div class="tasks-section">
+      <div class="tasks-head">
+        <h3>Tasks</h3>
+        <button class="btn-sm primary" onclick="showTaskForm()">+ Add Task</button>
+      </div>
+      <div class="task-form hidden" id="task-form">
+        <input type="text" id="task-input" placeholder="What are you working on?"/>
+        <div class="tf-row">
+          <label>Pomodoros</label>
+          <div class="pomo-stepper">
+            <button onclick="changeEst(-1)">−</button>
+            <span id="est-val">1</span>
+            <button onclick="changeEst(1)">+</button>
+          </div>
+        </div>
+        <div class="tf-actions">
+          <button class="btn-sm" onclick="hideTaskForm()">Cancel</button>
+          <button class="btn-sm primary" onclick="saveTask()">Save</button>
+        </div>
+      </div>
+      <div id="task-list"></div>
+    </div>
+  </main>
+
+  <!-- RIGHT PANEL: STATS -->
+  <aside class="right-panel">
+    <div class="section-title">
+      Stats
+      <div class="period-switch">
+        <button class="period-btn active" onclick="setPeriod('week',this)">W</button>
+        <button class="period-btn" onclick="setPeriod('month',this)">M</button>
+        <button class="period-btn" onclick="setPeriod('year',this)">Y</button>
+      </div>
+    </div>
+
+    <div class="stat-grid">
+      <div class="stat-card"><div class="stat-num" id="st-pomos">0</div><div class="stat-lbl">Pomodoros</div></div>
+      <div class="stat-card"><div class="stat-num" id="st-hrs">0<span>h</span></div><div class="stat-lbl">Focused</div></div>
+      <div class="stat-card"><div class="stat-num" id="st-avg">0</div><div class="stat-lbl">Daily avg</div></div>
+      <div class="stat-card"><div class="stat-num" id="st-streak">0<span>🔥</span></div><div class="stat-lbl">Streak</div></div>
+    </div>
+
+    <div class="bar-chart" id="stats-bar-chart"></div>
+    <div id="bar-labels" style="display:flex;gap:4px;margin-bottom:20px"></div>
+
+    <div class="section-title" style="margin-top:8px">By project</div>
+    <div class="project-breakdown" id="project-breakdown"></div>
+
+    <div style="margin-top:24px">
+      <div class="section-title">Today's Focus</div>
+      <div id="today-summary" style="font-size:13px;color:var(--text2);line-height:1.7"></div>
+    </div>
+  </aside>
+</div>
+
+<!-- FOCUS MODE OVERLAY -->
+<div class="focus-overlay hidden" id="focus-overlay">
+  <div class="focus-big" id="focus-big-digits">25:00</div>
+  <div class="focus-task" id="focus-big-task">Stay focused</div>
+  <button class="focus-exit" onclick="toggleFocusMode()">Exit focus mode</button>
+</div>
+
+<!-- PROJECT PICKER (dropdown) -->
+<div class="overlay hidden" id="proj-picker-overlay" onclick="closeProjPicker(event)">
+  <div class="modal" style="max-width:320px">
+    <div class="modal-hd"><span class="modal-title">Select project</span><button class="modal-close" onclick="closeProjPicker()">×</button></div>
+    <div class="modal-body" id="proj-picker-list" style="padding:12px 16px;display:flex;flex-direction:column;gap:4px"></div>
+  </div>
+</div>
+
+<!-- ADD/EDIT PROJECT MODAL -->
+<div class="overlay hidden" id="project-modal" onclick="closeModal('project-modal',event)">
+  <div class="modal">
+    <div class="modal-hd">
+      <span class="modal-title" id="proj-modal-title">New Project</span>
+      <button class="modal-close" onclick="closeModal('project-modal')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="field-group"><div class="field-label">Name</div><input class="field-input" id="proj-name" placeholder="Project name"/></div>
+      <div class="field-group"><div class="field-label">Icon</div><input class="field-input" id="proj-icon" placeholder="Emoji e.g. 📚" maxlength="4"/></div>
+      <div class="field-group"><div class="field-label">Group</div><input class="field-input" id="proj-group" placeholder="e.g. Work, Study, Personal"/></div>
+      <div class="field-group">
+        <div class="field-label">Color</div>
+        <div class="color-row" id="proj-color-row"></div>
+      </div>
+      <div class="field-group">
+        <div class="field-label">Daily Goal (pomodoros)</div>
+        <div class="dur-control">
+          <button class="dur-btn" onclick="changeGoal(-1)">−</button>
+          <div class="dur-val" id="proj-goal-val">4</div>
+          <button class="dur-btn" onclick="changeGoal(1)">+</button>
+          <span class="dur-unit">pomodoros</span>
+        </div>
+      </div>
+      <button class="btn-primary" onclick="saveProject()">Save Project</button>
+      <button class="btn-primary btn-danger" id="delete-proj-btn" onclick="deleteProject()" style="margin-top:8px;display:none">Delete Project</button>
+    </div>
+  </div>
+</div>
+
+<!-- SETTINGS MODAL -->
+<div class="overlay hidden" id="settings-modal" onclick="closeModal('settings-modal',event)">
+  <div class="modal">
+    <div class="modal-hd"><span class="modal-title">Settings</span><button class="modal-close" onclick="closeModal('settings-modal')">×</button></div>
+    <div class="modal-body">
+      <div class="field-group">
+        <div class="field-label">Timer Durations</div>
+        <div style="display:flex;flex-direction:column;gap:12px">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <span style="font-size:14px;color:var(--text2)">Pomodoro</span>
+            <div class="dur-control"><button class="dur-btn" onclick="adjDur('focusDuration',-1)">−</button><div class="dur-val" id="s-focus">25</div><button class="dur-btn" onclick="adjDur('focusDuration',1)">+</button><span class="dur-unit">min</span></div>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <span style="font-size:14px;color:var(--text2)">Short break</span>
+            <div class="dur-control"><button class="dur-btn" onclick="adjDur('shortBreak',-1)">−</button><div class="dur-val" id="s-short">5</div><button class="dur-btn" onclick="adjDur('shortBreak',1)">+</button><span class="dur-unit">min</span></div>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <span style="font-size:14px;color:var(--text2)">Long break</span>
+            <div class="dur-control"><button class="dur-btn" onclick="adjDur('longBreak',-1)">−</button><div class="dur-val" id="s-long">15</div><button class="dur-btn" onclick="adjDur('longBreak',1)">+</button><span class="dur-unit">min</span></div>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <span style="font-size:14px;color:var(--text2)">Long break interval</span>
+            <div class="dur-control"><button class="dur-btn" onclick="adjDur('interval',-1)">−</button><div class="dur-val" id="s-interval">4</div><button class="dur-btn" onclick="adjDur('interval',1)">+</button><span class="dur-unit">sessions</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="field-group">
+        <div class="field-label">Behaviour</div>
+        <div class="toggle-row"><div class="toggle-info"><div class="t-name">Auto-start breaks</div></div><label class="toggle"><input type="checkbox" id="t-autobreak"><div class="toggle-sl"></div></label></div>
+        <div class="toggle-row"><div class="toggle-info"><div class="t-name">Auto-start pomodoros</div></div><label class="toggle"><input type="checkbox" id="t-autopomo"><div class="toggle-sl"></div></label></div>
+        <div class="toggle-row"><div class="toggle-info"><div class="t-name">Count up</div><div class="t-sub">Timer counts up instead of down</div></div><label class="toggle"><input type="checkbox" id="t-countup"><div class="toggle-sl"></div></label></div>
+      </div>
+      <div class="field-group">
+        <div class="field-label">Alarm</div>
+        <div class="alarm-row">
+          <button class="alarm-chip active" onclick="selectAlarm('bell',this)">🔔 Bell</button>
+          <button class="alarm-chip" onclick="selectAlarm('digital',this)">📟 Digital</button>
+          <button class="alarm-chip" onclick="selectAlarm('kitchen',this)">⏰ Kitchen</button>
+          <button class="alarm-chip" onclick="selectAlarm('birds',this)">🐦 Birds</button>
+          <button class="alarm-chip" onclick="selectAlarm('none',this)">🔇 None</button>
+        </div>
+        <div class="vol-row" style="margin-top:10px">
+          <span style="font-size:12px;color:var(--text3)">Volume</span>
+          <input type="range" min="0" max="100" id="s-volume" oninput="document.getElementById('vol-display').textContent=this.value+'%'"/>
+          <span class="vol-val" id="vol-display">80%</span>
+        </div>
+      </div>
+      <div class="field-group">
+        <div class="field-label">Theme</div>
+        <div class="theme-row">
+          <div class="theme-swatch active" data-t="aurora" onclick="setTheme('aurora',this)" style="background:linear-gradient(135deg,#a78bfa,#f472b6)" title="Aurora"></div>
+          <div class="theme-swatch" data-t="ember" onclick="setTheme('ember',this)" style="background:linear-gradient(135deg,#fb923c,#f87171)" title="Ember"></div>
+          <div class="theme-swatch" data-t="ocean" onclick="setTheme('ocean',this)" style="background:linear-gradient(135deg,#38bdf8,#818cf8)" title="Ocean"></div>
+          <div class="theme-swatch" data-t="forest" onclick="setTheme('forest',this)" style="background:linear-gradient(135deg,#4ade80,#059669)" title="Forest"></div>
+          <div class="theme-swatch" data-t="sakura" onclick="setTheme('sakura',this)" style="background:linear-gradient(135deg,#f9a8d4,#c084fc)" title="Sakura"></div>
+        </div>
+      </div>
+      <button class="btn-primary" onclick="saveSettings()">Save Settings</button>
+    </div>
+  </div>
+</div>
+
+<!-- REPORT MODAL -->
+<div class="overlay hidden" id="report-modal" onclick="closeModal('report-modal',event)">
+  <div class="modal" style="max-width:560px">
+    <div class="modal-hd"><span class="modal-title">Focus Report</span><button class="modal-close" onclick="closeModal('report-modal')">×</button></div>
+    <div class="modal-body">
+      <div style="display:flex;gap:8px;margin-bottom:20px">
+        <button class="period-btn active" onclick="setReportPeriod('week',this)" style="flex:1;padding:9px">Week</button>
+        <button class="period-btn" onclick="setReportPeriod('month',this)" style="flex:1;padding:9px">Month</button>
+        <button class="period-btn" onclick="setReportPeriod('year',this)" style="flex:1;padding:9px">Year</button>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:24px">
+        <div class="stat-card"><div class="stat-num" id="rp-pomos">0</div><div class="stat-lbl">Pomodoros</div></div>
+        <div class="stat-card"><div class="stat-num" id="rp-time">0h 0m</div><div class="stat-lbl">Focus time</div></div>
+        <div class="stat-card"><div class="stat-num" id="rp-avg">0</div><div class="stat-lbl">Daily average</div></div>
+        <div class="stat-card"><div class="stat-num" id="rp-streak">0<span>🔥</span></div><div class="stat-lbl">Day streak</div></div>
+      </div>
+      <div style="font-size:12px;color:var(--text3);margin-bottom:10px" id="rp-chart-lbl">Pomodoros per day</div>
+      <div class="bar-chart" id="report-bar-chart" style="height:110px"></div>
+      <div id="report-bar-labels" style="display:flex;gap:4px;margin-top:4px;margin-bottom:20px"></div>
+      <div class="section-title" style="font-size:13px;margin-bottom:12px">By project</div>
+      <div id="report-breakdown"></div>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast-wrap" id="toast-wrap"></div>
+
+<script src="app.js"></script>
+</body>
+</html>
