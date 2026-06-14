@@ -1,1 +1,12 @@
-
+{
+  "focusDuration": 25,
+  "shortBreak": 5,
+  "longBreak": 15,
+  "interval": 4,
+  "autoBreak": false,
+  "autoPomo": false,
+  "countUp": false,
+  "alarm": "bell",
+  "theme": "aurora",
+  "volume": 80
+}
